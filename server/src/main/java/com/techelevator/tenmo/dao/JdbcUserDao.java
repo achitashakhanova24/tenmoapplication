@@ -41,7 +41,7 @@ public abstract class JdbcUserDao implements UserDao {
         String sql = "SELECT user_id, username, password_hash FROM tenmo_user;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
         while (results.next()) {
-            User user = mapRowToUser(results);
+            User user = mapRowToUser(results, account);
             users.add(user);
         }
         return users;
@@ -52,7 +52,7 @@ public abstract class JdbcUserDao implements UserDao {
         String sql = "SELECT user_id, username, password_hash FROM tenmo_user WHERE username ILIKE ?;";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, username);
         if (rowSet.next()) {
-            return mapRowToUser(rowSet);
+            return mapRowToUser(rowSet, account);
         }
         throw new UsernameNotFoundException("User " + username + " was not found.");
     }
@@ -94,8 +94,8 @@ public abstract class JdbcUserDao implements UserDao {
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
             while (results.next()) {
-                User user = mapRowToUser(results);
-                account = mapRowToAccount(results, user);
+                User user = mapRowToUser(results, account);
+                account = mapRowToAccount(results);
             }
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
@@ -104,12 +104,32 @@ public abstract class JdbcUserDao implements UserDao {
         }
         return null;
     }
+    @Override
+    public List<User> list() throws DaoException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM user";
+
+        try {
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
+            while (rowSet.next()) {
+                Account account = mapRowToAccount(rowSet);
+                User user = mapRowToUser(rowSet, account);
+                users.add(user);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (BadSqlGrammarException e) {
+            throw new DaoException("SQL syntax error", e);
+        }
+        return users;
+    }
+
     private Account mapRowToAccount(
-            SqlRowSet results, User user) {
+            SqlRowSet results) {
         return null;
     }
 
-    private User mapRowToUser(SqlRowSet rs) {
+    private User mapRowToUser(SqlRowSet rs, Account account) {
         User user = new User();
         user.setId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));
@@ -119,83 +139,3 @@ public abstract class JdbcUserDao implements UserDao {
         return user;
     }
 }
-
-
-
-
-
-//    @Override
-//    public List<Hotel> list() {
-//        List<Hotel> hotelList = new ArrayList<>();
-//        String sql = "SELECT h.id, h.name, h.stars, h.rooms_available, " +
-//                "h.cost_per_night, h.cover_img, a.id AS address_id, a.address, a.city, a.state, a.zip from hotel h JOIN address a ON " +
-//                "h.address_id = a.id";
-//
-//        try {
-//            SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-//            while (results.next()) {
-//                Address address = mapRowToAddress(results);
-//                Hotel hotel = mapRowToHotel(results, address);
-//                hotelList.add(hotel);
-//            }
-//        } catch (CannotGetJdbcConnectionException e) {
-//            throw new DaoException("Unable to connect to server or database", e);
-//        } catch (BadSqlGrammarException e) {
-//            throw new DaoException("SQL syntax error", e);
-//        }
-//        return hotelList;
-//    }
-//
-//
-//
-//    @Override
-//    public Reservation update(Reservation reservation, int reservationID) {
-//        Reservation newReservation = null;
-//        String sql = "UPDATE reservations SET " +
-//                "full_name=?, check_in_date=?, check_out_date=?, guests=? " +
-//                "WHERE id = ?";
-//
-//        int guests = reservation.getGuests();
-//        String fullName = reservation.getFullName();
-//        String checkInDate = reservation.getCheckinDate();
-//        String checkoutDate = reservation.getCheckoutDate();
-//
-//        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        LocalDate dateLD = LocalDate.parse(checkInDate, format);
-//        LocalDate checkOutDate = LocalDate.parse(checkoutDate, format);
-//
-//        try {
-//            int rowsAffected = jdbcTemplate.update(sql, fullName, dateLD, checkOutDate, guests, reservationID);
-//            if(rowsAffected == 0){
-//                throw new DaoException("ERROR updating reservation. Reservation not updated");
-//            } else {
-//                newReservation = get(reservationID);
-//            }
-//        } catch (CannotGetJdbcConnectionException e) {
-//            throw new DaoException("Unable to connect to server or database", e);
-//        } catch (BadSqlGrammarException e) {
-//            throw new DaoException("SQL syntax error", e);
-//        } catch (DataIntegrityViolationException e) {
-//            throw new DaoException("Data integrity violation", e);
-//        }
-//
-//        return newReservation;
-//    }
-//
-//    @Override
-//    public void delete(int reservationId) {
-//        String sql = "DELETE FROM reservations WHERE id = ?";
-//
-//        try {
-//            jdbcTemplate.update(sql, reservationId);
-//        } catch (CannotGetJdbcConnectionException e) {
-//            throw new DaoException("Unable to connect to server or database", e);
-//        } catch (BadSqlGrammarException e) {
-//            throw new DaoException("SQL syntax error", e);
-//        } catch (DataIntegrityViolationException e) {
-//            throw new DaoException("Data integrity violation", e);
-//        }
-//    }
-
-
-

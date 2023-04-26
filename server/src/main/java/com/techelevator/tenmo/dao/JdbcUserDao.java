@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JdbcUserDao implements UserDao {
+public abstract class JdbcUserDao implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -70,13 +71,12 @@ public class JdbcUserDao implements UserDao {
         return false;
     }
 
+
     // TODO: Create the account record with initial balance
-
-
     @Override
     public boolean createAccount(int accountID, int userID, BigDecimal accountBalance, String accountPassword) {
         // create account
-        String accountSql = "INSERT INTO accounts(user_id, balance, password_hash) VALUES (?, ?, ? )";
+        String accountSql = "INSERT INTO account(user_id, balance, password_hash) VALUES (?, ?, ? )";
         BigDecimal initialBalance = new BigDecimal("1000.00");
         String accountPassword_hash = new BCryptPasswordEncoder().encode(accountPassword);
         Integer newAccountId;
@@ -86,6 +86,43 @@ public class JdbcUserDao implements UserDao {
         }
         return false;
     }
+
+    @Override
+    public BigDecimal getBalance(int accountId) throws DaoException {
+        Account account = null;
+        String sql = "SELECT balance FROM account WHERE user_id= ?";
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
+            while (results.next()) {
+                User user = mapRowToUser(results);
+                account = mapRowToAccount(results, user);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            throw new DaoException("Unable to connect to server or database", e);
+        } catch (BadSqlGrammarException e) {
+            throw new DaoException("SQL syntax error", e);
+        }
+        return null;
+    }
+    private Account mapRowToAccount(
+            SqlRowSet results, User user) {
+        return null;
+    }
+
+    private User mapRowToUser(SqlRowSet rs) {
+        User user = new User();
+        user.setId(rs.getInt("user_id"));
+        user.setUsername(rs.getString("username"));
+        user.setPassword(rs.getString("password_hash"));
+        user.setActivated(true);
+        user.setAuthorities("USER");
+        return user;
+    }
+}
+
+
+
+
 
 //    @Override
 //    public List<Hotel> list() {
@@ -109,27 +146,7 @@ public class JdbcUserDao implements UserDao {
 //        return hotelList;
 //    }
 //
-//    @Override
-//    public Hotel get(int id) {
-//        Hotel hotel = null;
-//        String sql = "SELECT h.id, h.name, h.stars, h.rooms_available, " +
-//                "h.cost_per_night, h.cover_img, a.id AS address_id, a.address, a.city, a.state, a.zip from hotel h JOIN address a ON " +
-//                "h.address_id = a.id WHERE h.id = ?";
 //
-//        try {
-//            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
-//            while (results.next()) {
-//                Address address = mapRowToAddress(results);
-//                hotel = mapRowToHotel(results, address);
-//            }
-//        } catch (CannotGetJdbcConnectionException e) {
-//            throw new DaoException("Unable to connect to server or database", e);
-//        } catch (BadSqlGrammarException e) {
-//            throw new DaoException("SQL syntax error", e);
-//        }
-//
-//        return hotel;
-//    }
 //
 //    @Override
 //    public Reservation update(Reservation reservation, int reservationID) {
@@ -182,14 +199,3 @@ public class JdbcUserDao implements UserDao {
 
 
 
-
-    private User mapRowToUser(SqlRowSet rs) {
-        User user = new User();
-        user.setId(rs.getInt("user_id"));
-        user.setUsername(rs.getString("username"));
-        user.setPassword(rs.getString("password_hash"));
-        user.setActivated(true);
-        user.setAuthorities("USER");
-        return user;
-    }
-}

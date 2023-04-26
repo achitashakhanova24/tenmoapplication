@@ -1,56 +1,66 @@
 package com.techelevator.tenmo.model;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public class Account {
 
-    private int id;
-    private String username;
-    private String password;
-    private boolean activated;
+    private int accountID;
+    private String accountPassword;
+    private boolean accountActivated;
+    private BigDecimal accountBalance;
     private Set<Authority> authorities = new HashSet<>();
 
-    public User() { }
+    public Account() { }
 
-    public User(int id, String username, String password, String authorities) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.activated = true;
+    public Account(int accountID, String accountPassword, String authorities, BigDecimal accountBalance) {
+        this.accountID = accountID;
+        this.accountPassword = accountPassword;
+        this.accountActivated = true;
+        this.accountBalance = accountBalance;
+    }
+
+    public int getAccountID() {
+        return accountID;
+    }
+
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
+    }
+
+    public BigDecimal getAccountBalance() {
+        return accountBalance;
+    }
+
+    public void setAccountBalance(BigDecimal accountBalance) {
+        this.accountBalance = accountBalance;
     }
 
     public int getId() {
-        return id;
+        return accountID;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.accountID = accountID;
     }
 
-    public String getUsername() {
-        return username;
+
+    public String getAccountPassword() {
+        return accountPassword;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccountPassword(String accountPassword) {
+        this.accountPassword = accountPassword;
     }
 
-    public String getPassword() {
-        return password;
+    public boolean isAccountActivated() {
+        return accountActivated;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated = activated;
+    public void setAccountActivated(boolean accountActivated) {
+        this.accountActivated = accountActivated;
     }
 
     public Set<Authority> getAuthorities() {
@@ -72,28 +82,25 @@ public class Account {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id &&
-                activated == user.activated &&
-                Objects.equals(username, user.username) &&
-                Objects.equals(password, user.password) &&
-                Objects.equals(authorities, user.authorities);
+        Account account = (Account) o;
+        return accountID== account.accountID &&
+               accountActivated == account.accountActivated &&
+                Objects.equals(accountPassword, account.accountPassword) &&
+                Objects.equals(authorities, account.authorities);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, activated, authorities);
+        return Objects.hash(accountID, accountPassword, accountActivated, authorities);
     }
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", activated=" + activated +
+        return "Account{" +
+                "accountID=" + accountID +
+                ", accountActivated=" + accountActivated +
                 ", authorities=" + authorities +
                 '}';
     }
 }
 
-}

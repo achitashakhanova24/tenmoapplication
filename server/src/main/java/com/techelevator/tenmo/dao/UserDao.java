@@ -16,4 +16,6 @@ public interface UserDao {
     boolean create(String username, String password);
 
     boolean createAccount(int accountID, int userID, BigDecimal accountBalance, String accountPassword);
+
+    BigDecimal getBalance(int userID) throws DaoException;
 }

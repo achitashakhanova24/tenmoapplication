@@ -10,6 +10,9 @@ public interface AccountDao {
 
     BigDecimal getBalance(int userID) throws DaoException;
 
+    Account getAccountByUserId(int userId);
+
+
     //method to decrease balance
 
     //method to increase balance

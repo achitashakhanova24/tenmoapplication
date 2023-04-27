@@ -6,15 +6,15 @@ import java.math.BigDecimal;
 public class Account {
 
     private int accountID;
-    private boolean accountActivated;
-    private BigDecimal accountBalance;
+    private int userID;
+    private BigDecimal balance;
 
     public Account() { }
 
-    public Account(int accountID, BigDecimal accountBalance) {
+    public Account(int accountID, int userID, BigDecimal balance) {
         this.accountID = accountID;
-        this.accountActivated = true;
-        this.accountBalance = accountBalance;
+        this.userID = userID;
+        this.balance = balance;
     }
 
     public int getAccountID() {
@@ -25,36 +25,20 @@ public class Account {
         this.accountID = accountID;
     }
 
-    public BigDecimal getAccountBalance() {
-        return accountBalance;
+    public int getUserID() {
+        return userID;
     }
 
-    public void setAccountBalance(BigDecimal accountBalance) {
-        this.accountBalance = accountBalance;
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
-    public int getId() {
-        return accountID;
+    public BigDecimal getBalance() {
+        return balance;
     }
 
-    public void setId(int id) {
-        this.accountID = accountID;
-    }
-
-    public boolean isAccountActivated() {
-        return accountActivated;
-    }
-
-    public void setAccountActivated(boolean accountActivated) {
-        this.accountActivated = accountActivated;
-    }
-
-    @Override
-    public String toString() {
-        return "Account{" +
-                "accountID=" + accountID +
-                ", accountActivated=" + accountActivated +
-                '}';
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
 }
 

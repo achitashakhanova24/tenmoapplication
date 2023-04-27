@@ -2,6 +2,8 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.DaoException;
+import com.techelevator.tenmo.dao.UserDao;
+import com.techelevator.tenmo.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,24 +11,33 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 
-@PreAuthorize("isAuthenticated()")
-@RestController
-public class TenmoController {
 
-    @Autowired
-    AccountDao dao;
+    //@PreAuthorize("isAuthenticated()")
+    @RestController
+    public class TenmoController {
+    //    @RequestMapping ("/balance")
+    //    @Autowired
+        AccountDao dao;
+        UserDao userDao;
+        public TenmoController(AccountDao dao, UserDao userDao) {
+            this.dao = dao;
+            this.userDao = userDao;
+        }
 
-    // I need a mapping that will call
-    // the account dao's get balance method
-    // this amount will be returned to whoever made the call
-    @RequestMapping(path = "/balance/{userId}", method = RequestMethod.GET)
-    public BigDecimal getBalance(@PathVariable int userId) throws DaoException {
-      BigDecimal balance = dao.getBalance(userId);
+
+    @RequestMapping(path = "/balance", method = RequestMethod.GET)
+    public BigDecimal getBalance(Principal principal) throws DaoException {
+        String username = principal.getName();
+        int userId = userDao.findIdByUsername(username);
+        int accountId = dao.getAccountByUserId(userId).getAccountID();
+        BigDecimal balance = dao.getBalance(accountId);
         if (balance == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found.");
         } else {
             return balance;
         }
     }
+
 }

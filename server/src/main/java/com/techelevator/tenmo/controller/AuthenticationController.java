@@ -2,6 +2,7 @@ package com.techelevator.tenmo.controller;
 
 import javax.validation.Valid;
 
+import com.techelevator.tenmo.model.Account;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,13 +42,10 @@ public class AuthenticationController {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
-
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication, false);
-        
         User user = userDao.findByUsername(loginDto.getUsername());
-
         return new LoginResponse(jwt, user);
     }
 

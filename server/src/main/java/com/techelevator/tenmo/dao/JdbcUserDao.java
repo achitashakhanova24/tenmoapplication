@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public abstract class JdbcUserDao implements UserDao {
+public class JdbcUserDao implements UserDao {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -41,7 +40,7 @@ public abstract class JdbcUserDao implements UserDao {
         String sql = "SELECT user_id, username, password_hash FROM tenmo_user;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
         while (results.next()) {
-            User user = mapRowToUser(results, account);
+            User user = mapRowToUser(results);
             users.add(user);
         }
         return users;
@@ -51,85 +50,54 @@ public abstract class JdbcUserDao implements UserDao {
     public User findByUsername(String username) throws UsernameNotFoundException {
         String sql = "SELECT user_id, username, password_hash FROM tenmo_user WHERE username ILIKE ?;";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, username);
-        if (rowSet.next()) {
-            return mapRowToUser(rowSet, account);
+        if (rowSet.next()){
+            return mapRowToUser(rowSet);
         }
         throw new UsernameNotFoundException("User " + username + " was not found.");
     }
 
     @Override
     public boolean create(String username, String password) {
-
-        // create user
         String sql = "INSERT INTO tenmo_user (username, password_hash) VALUES (?, ?) RETURNING user_id";
         String password_hash = new BCryptPasswordEncoder().encode(password);
-        Integer newUserId;
+        Integer newUserId = 1001;
         try {
             newUserId = jdbcTemplate.queryForObject(sql, Integer.class, username, password_hash);
         } catch (DataAccessException e) {
+            //handle exception
         }
-        return false;
-    }
-
-
-    // TODO: Create the account record with initial balance
-    @Override
-    public boolean createAccount(int accountID, int userID, BigDecimal accountBalance, String accountPassword) {
-        // create account
-        String accountSql = "INSERT INTO account(user_id, balance, password_hash) VALUES (?, ?, ? )";
+        String accountSql = "INSERT INTO account(user_id, balance) VALUES (?, ?)";
         BigDecimal initialBalance = new BigDecimal("1000.00");
-        String accountPassword_hash = new BCryptPasswordEncoder().encode(accountPassword);
-        Integer newAccountId;
+        Integer newAccountId = 2001;
         try {
-            newAccountId = jdbcTemplate.queryForObject(accountSql, Integer.class, userID, accountBalance.add(initialBalance), accountPassword_hash);
+            newAccountId = jdbcTemplate.queryForObject(accountSql, Integer.class, newUserId, initialBalance);
         } catch (DataAccessException e) {
+            //handle exception
         }
-        return false;
+        return newUserId != null;
     }
 
-    @Override
-    public BigDecimal getBalance(int accountId) throws DaoException {
-        Account account = null;
-        String sql = "SELECT balance FROM account WHERE user_id= ?";
-        try {
-            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
-            while (results.next()) {
-                User user = mapRowToUser(results, account);
-                account = mapRowToAccount(results);
-            }
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Unable to connect to server or database", e);
-        } catch (BadSqlGrammarException e) {
-            throw new DaoException("SQL syntax error", e);
-        }
-        return null;
-    }
-    @Override
-    public List<User> list() throws DaoException {
-        List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM user";
 
-        try {
-            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
-            while (rowSet.next()) {
-                Account account = mapRowToAccount(rowSet);
-                User user = mapRowToUser(rowSet, account);
-                users.add(user);
-            }
-        } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Unable to connect to server or database", e);
-        } catch (BadSqlGrammarException e) {
-            throw new DaoException("SQL syntax error", e);
-        }
-        return users;
-    }
+//    @Override
+//    public List<User> list() throws DaoException {
+//        List<User> users = new ArrayList<>();
+//        String sql = "SELECT * FROM user";
+//
+//        try {
+//            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
+//            while (rowSet.next()) {
+//                User user = mapRowToUser(rowSet);
+//                users.add(user);
+//            }
+//        } catch (CannotGetJdbcConnectionException e) {
+//            throw new DaoException("Unable to connect to server or database", e);
+//        } catch (BadSqlGrammarException e) {
+//            throw new DaoException("SQL syntax error", e);
+//        }
+//        return users;
+//    }
 
-    private Account mapRowToAccount(
-            SqlRowSet results) {
-        return null;
-    }
-
-    private User mapRowToUser(SqlRowSet rs, Account account) {
+    private User mapRowToUser(SqlRowSet rs) {
         User user = new User();
         user.setId(rs.getInt("user_id"));
         user.setUsername(rs.getString("username"));

@@ -3,14 +3,23 @@ package com.techelevator.tenmo.model;
 import java.math.BigDecimal;
 
 public class Transfer {
-
+    private int transferId;
     private int accountFrom;
     private int accountTo;
-    private BigDecimal balance;
-    private int transferStatus;
-    private String accountFromUsername;
-    private String accountToUsername;
+    private BigDecimal moneyTransfer;
+    private String transferStatus;
+    private BigDecimal transferBalance;
+    // TODO: Status / Type instance variables "Approved" / "Pending"
+    // Send / Request
 
+
+    public int getTransferId() {
+        return transferId;
+    }
+
+    public void setTransferId(int transferId) {
+        this.transferId = transferId;
+    }
 
     public int getAccountFrom() {
         return accountFrom;
@@ -28,35 +37,28 @@ public class Transfer {
         this.accountTo = accountTo;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
+    public BigDecimal getMoneyTransfer() {
+        return moneyTransfer;
     }
 
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
+    public void setMoneyTransfer(BigDecimal moneyTransfer) {
+        this.moneyTransfer = moneyTransfer;
     }
 
-    public int getTransferStatus() {
+    public String getTransferStatus() {
         return transferStatus;
     }
 
-    public void setTransferStatus(int transferStatus) {
+    public void  setTransferStatus(String transferStatus) {
         this.transferStatus = transferStatus;
     }
 
-    public String getAccountFromUsername() {
-        return accountFromUsername;
+    public BigDecimal getTransferBalance() {
+        return transferBalance;
     }
 
-    public void setAccountFromUsername(String accountFromUsername) {
-        this.accountFromUsername = accountFromUsername;
+    public void setTransferBalance(BigDecimal transferBalance) {
+        this.transferBalance = transferBalance;
     }
 
-    public String getAccountToUsername() {
-        return accountToUsername;
-    }
-
-    public void setAccountToUsername(String accountToUsername) {
-        this.accountToUsername = accountToUsername;
-    }
 }

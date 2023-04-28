@@ -2,11 +2,9 @@ package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.DaoException;
+import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.dao.UserDao;
-import com.techelevator.tenmo.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,11 +17,14 @@ import java.security.Principal;
     public class TenmoController {
     //    @RequestMapping ("/balance")
     //    @Autowired
-        AccountDao dao;
+        AccountDao accountDao;
         UserDao userDao;
-        public TenmoController(AccountDao dao, UserDao userDao) {
-            this.dao = dao;
+        TransferDao transferDao;
+
+        public TenmoController(AccountDao dao, UserDao userDao, TransferDao transferDao) {
+            this.accountDao = dao;
             this.userDao = userDao;
+            this.transferDao = transferDao;
         }
 
 
@@ -31,8 +32,8 @@ import java.security.Principal;
     public BigDecimal getBalance(Principal principal) throws DaoException {
         String username = principal.getName();
         int userId = userDao.findIdByUsername(username);
-        int accountId = dao.getAccountByUserId(userId).getAccountID();
-        BigDecimal balance = dao.getBalance(accountId);
+        int accountId = accountDao.getAccountByUserId(userId).getAccountID();
+        BigDecimal balance = accountDao.getBalance(accountId);
         if (balance == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found.");
         } else {

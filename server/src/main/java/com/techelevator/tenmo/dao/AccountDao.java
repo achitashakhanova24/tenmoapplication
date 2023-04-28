@@ -6,16 +6,14 @@ import java.math.BigDecimal;
 
 public interface AccountDao {
 
-    boolean createAccount(Account account);
 
-    BigDecimal getBalance(int userID) throws DaoException;
+    BigDecimal getBalance(int accountId);
+
+    // TODO: Create the account record with initial balance
+    boolean createAccount(Account account);
 
     Account getAccountByUserId(int userId);
 
-
-    //method to decrease balance
-
-    //method to increase balance
-
+   BigDecimal updateBalance(int accountFrom, BigDecimal subtract);
 }
 

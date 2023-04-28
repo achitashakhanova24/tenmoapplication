@@ -1,13 +1,10 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -36,11 +33,6 @@ public class JdbcAccountDao implements AccountDao {
         return newAccountId != null;
     }
 
-//    String sql = "SELECT user_id, username, password_hash FROM tenmo_user WHERE username ILIKE ?;";
-//    SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, username);
-//        if (rowSet.next()){
-//        return mapRowToUser(rowSet);
-//    }
 
     public Account getAccountByUserId(int userId) {
         String sql = "SELECT user_id, account_id, balance FROM account WHERE user_id = ? ";
@@ -52,7 +44,13 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public BigDecimal getBalance(int accountId) throws DaoException {
+    public BigDecimal updateBalance(int accountFrom, BigDecimal subtract) {
+        return null;
+    }
+
+
+    @Override
+    public BigDecimal getBalance(int accountId) {
         Account account = new Account();
         String sql = "SELECT balance FROM account WHERE account_id= ?";
         try {
@@ -61,9 +59,7 @@ public class JdbcAccountDao implements AccountDao {
                 account.setBalance(results.getBigDecimal("balance"));
             }
         } catch (CannotGetJdbcConnectionException e) {
-            throw new DaoException("Unable to connect to server or database", e);
-        } catch (BadSqlGrammarException e) {
-            throw new DaoException("SQL syntax error", e);
+            System.out.println(e.getMessage());
         }
         return account.getBalance();
     }

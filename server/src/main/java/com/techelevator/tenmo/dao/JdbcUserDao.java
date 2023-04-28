@@ -66,7 +66,7 @@ public class JdbcUserDao implements UserDao {
         } catch (DataAccessException e) {
             //handle exception
         }
-        String accountSql = "INSERT INTO account(user_id, balance) VALUES (?, ?)";
+        String accountSql = "INSERT INTO account(user_id, balance) VALUES (?, ?) RETURNING account_id";
         BigDecimal initialBalance = new BigDecimal("1000.00");
         Integer newAccountId = 2001;
         try {
@@ -76,26 +76,6 @@ public class JdbcUserDao implements UserDao {
         }
         return newUserId != null;
     }
-
-
-//    @Override
-//    public List<User> list() throws DaoException {
-//        List<User> users = new ArrayList<>();
-//        String sql = "SELECT * FROM user";
-//
-//        try {
-//            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
-//            while (rowSet.next()) {
-//                User user = mapRowToUser(rowSet);
-//                users.add(user);
-//            }
-//        } catch (CannotGetJdbcConnectionException e) {
-//            throw new DaoException("Unable to connect to server or database", e);
-//        } catch (BadSqlGrammarException e) {
-//            throw new DaoException("SQL syntax error", e);
-//        }
-//        return users;
-//    }
 
     private User mapRowToUser(SqlRowSet rs) {
         User user = new User();

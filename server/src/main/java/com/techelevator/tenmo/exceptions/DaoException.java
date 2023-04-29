@@ -1,4 +1,4 @@
-package com.techelevator.tenmo.dao;
+package com.techelevator.tenmo.exceptions;
 
 import org.springframework.dao.DataAccessException;
 

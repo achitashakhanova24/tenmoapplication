@@ -13,12 +13,9 @@ import java.math.BigDecimal;
 public class JdbcAccountDao implements AccountDao {
 
     private JdbcTemplate jdbcTemplate;
-
     public JdbcAccountDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
-    // TODO: Create the account record with initial balance
     @Override
     public boolean createAccount(Account account) {
         String accountSql = "INSERT INTO account(user_id, balance) VALUES (?, ?)";
@@ -32,8 +29,6 @@ public class JdbcAccountDao implements AccountDao {
         }
         return newAccountId != null;
     }
-
-
     public Account getAccountByUserId(int userId) {
         String sql = "SELECT user_id, account_id, balance FROM account WHERE user_id = ? ";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId);
@@ -42,13 +37,32 @@ public class JdbcAccountDao implements AccountDao {
         }
         return null;
     }
-
     @Override
-    public BigDecimal updateBalance(int accountFrom, BigDecimal subtract) {
-        return null;
+    public void updateAccountFromBalance(int accountFrom, BigDecimal subtract) {
+        String sql = "UPDATE accounts SET balance = balance - ? WHERE account_id = ?";
+        Account updatedAccountToBalance = new Account();
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, subtract, accountFrom);
+            if (results.next()) {
+                updatedAccountToBalance = mapRowToAccount(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            System.out.println(e.getMessage());
+        }
     }
-
-
+    @Override
+    public void updateAccountToBalance(int accountTo, BigDecimal add) {
+        String sql = "UPDATE accounts SET balance = balance + ? WHERE account_id = ?";
+        Account updatedAccount = new Account();
+        try {
+            SqlRowSet results = jdbcTemplate.queryForRowSet(sql, add, accountTo);
+            if (results.next()) {
+                updatedAccount = mapRowToAccount(results);
+            }
+        } catch (CannotGetJdbcConnectionException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     @Override
     public BigDecimal getBalance(int accountId) {
         Account account = new Account();
@@ -63,7 +77,6 @@ public class JdbcAccountDao implements AccountDao {
         }
         return account.getBalance();
     }
-
     private Account mapRowToAccount(SqlRowSet rs) {
         Account account = new Account();
         account.setUserID(rs.getInt("user_id"));

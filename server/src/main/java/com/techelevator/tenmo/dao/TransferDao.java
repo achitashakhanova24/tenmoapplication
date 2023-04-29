@@ -9,9 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 
 public interface TransferDao {
-    public void sendTransfer (Transfer transfer) throws InsufficientFundsException, IllegalArgumentException, TransferException;
 
-    public List<Transfer> getTransfersForUser(int userId);
+    //we changed this to boolean from public void
+    Boolean sendTransfer (Transfer transfer) throws InsufficientFundsException, IllegalArgumentException, TransferException;
+
     public Transfer getTransferById(int transferId);
 
     List<Transfer> getAllTransfersFromUser(int userId);

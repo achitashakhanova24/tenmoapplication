@@ -1,6 +1,6 @@
 #Tenmo Application Apr 2023 - Apr 2023
 
-Short description: aVenmo-like money transfer application using MVC pattern, Restful APIs, and Spring framework on the server-side. Utilized PostgreSQL for efficient database management, providing customers with secure and seamless money transfer capabilities.
+Short description: this is a Venmo-like money transfer application using MVC pattern, Restful APIs, and Spring framework on the server-side. Utilized PostgreSQL for efficient database management, providing customers with secure and seamless money transfer capabilities.
 
 In length: to implement the required use cases, a comprehensive backend structure was established. The architecture of the app includes controllers, models, DAO, and corresponding database tables. The use cases range from user registration to fund transfers, each requiring careful consideration of security, validation, and data integrity.
 
@@ -14,4 +14,4 @@ The table in the database store the persistent data, capturing user details, acc
 
 For user registration, a controller method interacts with a UserDAO to create a new user with an initial balance. The login functionality authenticates users and issue an authentication token for subsequent interactions.
 
-To implement fund transfers, a TransferController handles the transfer process, ensuring the sender has sufficient funds, the recipient is valid, and updating the balances accordingly. Transfers will be stored in a TransferDAO, with each transfer having a unique identifier and an initial status of "Approved."
+To implement fund transfers, a TransferController handles the transfer process, ensuring the sender has sufficient funds, the recipient is valid, and updating the balances accordingly. Transfers will be stored in a TransferDAO, with each transfer having a unique identifier and an initial status of "Approved." Controllers for account balance, transaction history, and transfer details provide the necessary endpoints to fulfill these requirements.
